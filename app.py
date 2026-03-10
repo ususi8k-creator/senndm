@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 # --- إعدادات Twilio الخاصة بك ---
 ACCOUNT_SID = 'AC13a7387376fe9394532a6f7aa4c1f06e'
-AUTH_TOKEN = '976b1e68763add3318f65bd427b3e5b6'  # استبدل هذا بالرمز السري الحقيقي
+AUTH_TOKEN = '9f8ea374ff149e72606884b640044b9d'  # استبدل هذا بالرمز السري الحقيقي
 TWILIO_NUMBER = '+14343035557'
 
 client = Client(ACCOUNT_SID, AUTH_TOKEN)
