@@ -3,77 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMS Pro | Static</title>
+    <title>Mersal SMS Gateway</title>
     <style>
-        :root { --main: #6366f1; --bg: #f8fafc; --text: #1e293b; }
-        body { background: var(--bg); font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); width: 350px; text-align: center; border: 1px solid #edf2f7; }
-        .icon-circle { width: 60px; height: 60px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-        h2 { color: var(--text); font-size: 22px; margin-bottom: 5px; }
-        p { color: #64748b; font-size: 13px; margin-bottom: 25px; }
-        .input-group { text-align: right; margin-bottom: 15px; }
-        label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 8px; }
-        input, textarea { width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s; }
-        input:focus { border-color: var(--main); background: #f5f7ff; }
-        button { width: 100%; padding: 14px; background: var(--main); border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
-        button:hover { opacity: 0.9; transform: translateY(-2px); }
-        #log { margin-top: 15px; font-size: 12px; color: #94a3b8; }
+        body { background: #fdfdfd; font-family: 'Segoe UI', Tahoma; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 340px; text-align: center; border: 1px solid #eee; }
+        h2 { color: #333; font-size: 20px; margin-bottom: 20px; }
+        input, textarea { width: 100%; margin-bottom: 15px; padding: 14px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 14px; outline: none; }
+        input:focus { border-color: #007bff; }
+        button { width: 100%; padding: 14px; background: #007bff; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #0056b3; transform: translateY(-2px); }
+        #status { margin-top: 20px; font-size: 13px; color: #777; line-height: 1.5; }
     </style>
 </head>
 <body>
-
-<div class="card">
-    <div class="icon-circle">📩</div>
-    <h2>إرسال الرسائل</h2>
-    <p>أداة سريعة وآمنة لإرسال الإشعارات</p>
-
-    <div class="input-group">
-        <label>رقم الهاتف (بدون مفتاح الدولة)</label>
-        <input type="text" id="phone" placeholder="7xxxxxxxxx">
+    <div class="box">
+        <h2>بوابة مرسال الذكية</h2>
+        <input type="text" id="phone" placeholder="رقم الهاتف (مثال: 96477xxxxxxx)">
+        <textarea id="msg" rows="3" placeholder="اكتب نص الرسالة هنا..."></textarea>
+        <button onclick="sendViaMersal()">إرسال الرسالة 🚀</button>
+        <div id="status">جاهز للإرسال..</div>
     </div>
 
-    <div class="input-group">
-        <label>نص الرسالة</label>
-        <textarea id="msg" rows="2" placeholder="اكتب رسالتك هنا..."></textarea>
-    </div>
+    <script>
+        async function sendViaMersal() {
+            const phone = document.getElementById('phone').value;
+            const msg = document.getElementById('msg').value;
+            const status = document.getElementById('status');
 
-    <button id="btn">إرسال الآن 🚀</button>
-    <div id="log">في انتظار البيانات...</div>
-</div>
+            if(!phone || !msg) return alert("يرجى ملء كافة الحقول");
 
-<script>
-    document.getElementById('btn').onclick = async () => {
-        const phone = document.getElementById('phone').value;
-        const msg = document.getElementById('msg').value;
-        const log = document.getElementById('log');
+            status.innerText = "⏳ جاري الإرسال عبر مرسال...";
 
-        if(!phone) return alert("يرجى إدخال الرقم");
+            // البيانات المطلوبة لبوابة مرسال (حسب توثيقهم الرسمي)
+            const payload = {
+                "api_key": "ضغ_هنا_مفتاح_API_الخاص_بك",
+                "sender": "اسم_المرسل",
+                "number": phone,
+                "message": msg
+            };
 
-        log.innerText = "⏳ جاري الإرسال عبر البروكسي...";
-
-        const params = new URLSearchParams();
-        params.append('action', 'send_pin_code');
-        params.append('msisdn', phone);
-        params.append('packageName', msg);
-        // باقي الثوابت المطلوبة للموقع
-        params.append('appId', '3'); params.append('countryId', '2'); params.append('currency', 'IQD');
-        params.append('tax', '0'); params.append('price', '1631'); params.append('cPPPId', '268');
-        params.append('paymentMethodId', '3');
-
-        try {
-            // لاحظ استخدام /proxy/ لتخطي الـ CORS
-            const response = await fetch('/proxy/wp-admin/admin-ajax.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params
-            });
-            const resText = await response.text();
-            log.innerText = "النتيجة: " + resText;
-        } catch (e) {
-            log.innerText = "❌ حدث خطأ، تأكد من ملف _redirects";
+            try {
+                const response = await fetch('/mersal-api/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                status.innerText = "النتيجة: " + (result.message || "تمت العملية");
+            } catch (e) {
+                status.innerText = "❌ حدث خطأ في الاتصال. تأكد من إعدادات البروكسي.";
+            }
         }
-    };
-</script>
-
+    </script>
 </body>
 </html>
