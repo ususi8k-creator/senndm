@@ -1,2 +1,3 @@
-/api/* https://pashacards.net/:splat  200
+/mersal-api/* https://api.mersal.com/v1/:splat  200
+
 
